@@ -117,7 +117,7 @@ def get_robot_state():
     robot = get_robot()
     move_result = robot.get_current_robot_state()
     result_json = move_result.to_json()
-    logger.info(f"MCP: get_robot_state outcome: {result_json.get("status", "success")}, Msg: {move_result.msg}")
+    logger.info(f"MCP: get_robot_state outcome: {result_json.get('status', 'success')}, Msg: {move_result.msg}")
     return get_state_with_images(result_json, is_movement=False)
 
 
