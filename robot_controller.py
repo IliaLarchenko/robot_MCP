@@ -11,10 +11,10 @@ from dataclasses import dataclass, field
 import time
 
 # --- Lerobot Imports ---
-from lerobot.common.robots import Robot
-from lerobot.common.robots.so100_follower import SO100Follower, SO100FollowerConfig
-from lerobot.common.robots.so101_follower import SO101Follower, SO101FollowerConfig
-from lerobot.common.robots.lekiwi import LeKiwiClient, LeKiwiClientConfig
+from lerobot.robots import Robot
+from lerobot.robots.so100_follower import SO100Follower, SO100FollowerConfig
+from lerobot.robots.so101_follower import SO101Follower, SO101FollowerConfig
+from lerobot.robots.lekiwi import LeKiwiClient, LeKiwiClientConfig
 
 # --- Local Imports ---
 from config import robot_config
@@ -459,22 +459,16 @@ class RobotController:
             observation = self.robot.get_observation()
             camera_images = {}
             
-            if self.robot_type == "lekiwi":
-                # LeKiwi returns images with observation.images. prefix and as torch tensors
-                for key, value in observation.items():
-                    if key.startswith("observation.images."):
-                        camera_name = key.replace("observation.images.", "")
-                        if hasattr(value, 'numpy'):  # torch tensor
-                            camera_images[camera_name] = value.numpy()
-                        elif isinstance(value, np.ndarray):
-                            camera_images[camera_name] = value
-            else:
-                # SO100/SO101: direct camera names as numpy arrays
-                camera_names = list(robot_config.lerobot_config.get("cameras", {}).keys())
-                camera_images = {
-                    key: value for key, value in observation.items()
-                    if key in camera_names and isinstance(value, np.ndarray) and value.ndim == 3
-                }
+            camera_names = list(robot_config.lerobot_config.get("cameras", {}).keys())
+            
+            # Handle both direct camera names (so100/so101) and prefixed names (lekiwi)
+            for key, value in observation.items():
+                camera_name = key.replace("observation.images.", "")
+                
+                if camera_name in camera_names and isinstance(value, np.ndarray) and value.ndim == 3:
+                    camera_images[camera_name] = value
+                elif key in camera_names and isinstance(value, np.ndarray) and value.ndim == 3:
+                    camera_images[key] = value
             
             return camera_images
         except Exception as e:
