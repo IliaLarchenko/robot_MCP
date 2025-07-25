@@ -85,6 +85,11 @@ def get_state_with_images(result_json: dict, is_movement: bool = False) -> List[
             time.sleep(1.0)  # wait until the robot moved before capturing images
         
         raw_imgs = robot.get_camera_images()
+        
+        if not raw_imgs:
+            logger.warning("MCP: No camera images returned from robot controller.")
+            return [result_json, "Warning: No camera images available."]
+
         mcp_images = [_np_to_mcp_image(img) for img in raw_imgs.values()]
             
         # Keep only human_readable_state inside robot_state for clients
@@ -117,7 +122,7 @@ def get_robot_state():
     robot = get_robot()
     move_result = robot.get_current_robot_state()
     result_json = move_result.to_json()
-    logger.info(f"MCP: get_robot_state outcome: {result_json.get("status", "success")}, Msg: {move_result.msg}")
+    logger.info(f"MCP: get_robot_state outcome: {result_json.get('status', 'success')}, Msg: {move_result.msg}")
     return get_state_with_images(result_json, is_movement=False)
 
 
