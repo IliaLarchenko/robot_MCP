@@ -1,9 +1,9 @@
 # LLM Providers
 anthropic
-google-generativeai
+google-genai
 openai
 # MCP
-mcp
+mcp[cli]
 # Testing
 pylint
 numpy
