@@ -6,7 +6,7 @@ Update it before using any other script.
 import os
 from dataclasses import dataclass, field
 from typing import Dict, Tuple, Any, Final
-from lerobot.common.cameras.opencv.configuration_opencv import OpenCVCameraConfig
+from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
 
 # Module-level constants
 DEFAULT_ROBOT_TYPE: Final[str] = "lekiwi" # "so100", "so101", "lekiwi"
@@ -63,6 +63,7 @@ class RobotConfig:
     # Use check_positions.py, move your robot to 0, 90, 180 degree positions 
     # and insert the corresponding normalized values here
     # You can use any 2 points per motor to interpolate, but wider range is better
+    # TODO: find a simpler way to calibrate the robot
     MOTOR_NORMALIZED_TO_DEGREE_MAPPING: Dict[str, Tuple[float, float, float, float]] = field(
         default_factory=lambda: {
             "shoulder_pan":  (-91.7, 99.5, 0.0, 180.0),
