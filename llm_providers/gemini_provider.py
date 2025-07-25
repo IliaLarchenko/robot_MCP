@@ -44,7 +44,7 @@ class GeminiProvider(LLMProvider):
         
         return [types.Tool(function_declarations=function_declarations)]
     
-    def format_messages(self, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def format_messages(self, messages: List[Dict[str, Any]], thinking_enabled: bool = False) -> List[Dict[str, Any]]:
         """Format messages for Gemini's API."""
         formatted_messages = []
         

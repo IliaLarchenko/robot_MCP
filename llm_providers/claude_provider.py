@@ -41,7 +41,7 @@ class ClaudeProvider(LLMProvider):
             for tool in tools
         ]
     
-    def format_messages(self, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def format_messages(self, messages: List[Dict[str, Any]], thinking_enabled: bool = False) -> List[Dict[str, Any]]:
         """Format messages for Claude's API."""
         formatted_messages = []
         
@@ -62,9 +62,20 @@ class ClaudeProvider(LLMProvider):
                 continue
             
             # Handle assistant messages with tool calls
-            if role == "assistant" and "tool_calls" in msg:
+            if role == "assistant" and ("tool_calls" in msg or "thinking" in msg):
                 assistant_content = []
                 
+                # If thinking is enabled for this turn, include the full thinking block
+                if thinking_enabled and "thinking" in msg and msg["thinking"]:
+                    thinking_block = msg["thinking"]
+                    if isinstance(thinking_block, dict):
+                        assistant_content.append(thinking_block)
+                # If thinking is disabled, convert the thinking block to simple text content
+                elif "thinking" in msg and msg["thinking"]:
+                    thinking_block = msg["thinking"]
+                    if isinstance(thinking_block, dict) and "thinking" in thinking_block:
+                         assistant_content.append({"type": "text", "text": f"I previously thought: {thinking_block['thinking']}"})
+
                 # Add text content if present
                 if content:
                     assistant_content.append({"type": "text", "text": content})
@@ -112,7 +123,7 @@ class ClaudeProvider(LLMProvider):
         
         # Extract system message
         system_message = self._extract_system_message(messages)
-        formatted_messages = self.format_messages(messages)
+        formatted_messages = self.format_messages(messages, thinking_enabled)
         
         # Build request parameters
         stream_params = {
@@ -179,8 +190,9 @@ class ClaudeProvider(LLMProvider):
                     if thinking_started or response_started:
                         print()  # New line after block
             
-            # Get final message and extract tool calls
+            # Get final message and extract tool calls and thinking block
             response = stream.get_final_message()
+            final_thinking_block = None
             
             # Extract tool calls from response
             for block in response.content:
@@ -193,6 +205,8 @@ class ClaudeProvider(LLMProvider):
                             "arguments": json.dumps(block.input)
                         }
                     })
+                elif block.type == 'thinking':
+                    final_thinking_block = block.model_dump()
             
             # Update usage information with final data
             if hasattr(response, 'usage'):
@@ -207,7 +221,7 @@ class ClaudeProvider(LLMProvider):
             
             return LLMResponse(
                 content="".join(response_content),
-                thinking="".join(thinking_content) if thinking_content else None,
+                thinking=final_thinking_block,
                 tool_calls=tool_calls,
                 provider=self.provider_name,
                 usage=usage_info

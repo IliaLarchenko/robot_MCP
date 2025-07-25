@@ -15,7 +15,7 @@ from functools import wraps
 class LLMResponse:
     """Response from LLM provider."""
     content: Optional[str] = None
-    thinking: Optional[str] = None
+    thinking: Optional[Any] = None
     tool_calls: Optional[List[Dict[str, Any]]] = None
     provider: str = ""
     usage: Dict[str, Any] = None
@@ -129,7 +129,7 @@ class LLMProvider(ABC):
         pass
     
     @abstractmethod
-    def format_messages(self, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def format_messages(self, messages: List[Dict[str, Any]], thinking_enabled: bool = False) -> List[Dict[str, Any]]:
         """Format messages for the provider's API."""
         pass
     

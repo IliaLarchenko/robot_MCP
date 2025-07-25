@@ -159,9 +159,15 @@ class AIAgent:
                     thinking_budget=self.thinking_budget
                 )
 
-                assistant_message = {"role": "assistant", "content": response.content or ""}
-                if response.tool_calls:
-                    assistant_message["tool_calls"] = response.tool_calls
+                # Prepare assistant message, handle content, tool calls, and thinking
+                assistant_message = {
+                    "role": "assistant",
+                    "content": response.content or "",
+                    "tool_calls": response.tool_calls or [],
+                }
+                
+                if response.thinking:
+                    assistant_message["thinking"] = response.thinking
                 
                 self.conversation_history.append(assistant_message)
                 
@@ -181,10 +187,11 @@ class AIAgent:
                     if usage_parts:
                         print(f"📊 Tokens - {' | '.join(usage_parts)}")
                 
-                if not response.tool_calls:
+                # If there are no tool calls, we are done with this turn.
+                if not assistant_message.get("tool_calls"):
                     return response.content or ""
 
-                tool_calls = self.llm_provider.format_tool_calls_for_execution(response.tool_calls)
+                tool_calls = self.llm_provider.format_tool_calls_for_execution(assistant_message["tool_calls"])
                 
                 tool_outputs = []
                 for tool_call in tool_calls:

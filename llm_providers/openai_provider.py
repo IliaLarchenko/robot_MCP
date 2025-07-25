@@ -51,7 +51,7 @@ class OpenAIProvider(LLMProvider):
             })
         return formatted_tools
 
-    def format_messages(self, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def format_messages(self, messages: List[Dict[str, Any]], thinking_enabled: bool = False) -> List[Dict[str, Any]]:
         """Format messages for OpenAI API with proper tool message handling."""
         formatted_messages = []
         system_content = None
