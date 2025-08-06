@@ -230,16 +230,16 @@ class TestMCPServerTools(unittest.TestCase):
             move_gripper_up_mm=10.0,
             move_gripper_forward_mm=5.0,
             tilt_gripper_down_angle=15.0,
-            rotate_gripper_clockwise_angle=20.0,
-            rotate_robot_right_angle=30.0
+            rotate_gripper_counterclockwise_angle=20.0,
+            rotate_robot_left_angle=30.0
         )
         
         mock_robot.execute_intuitive_move.assert_called_once_with(
             move_gripper_up_mm=10.0,
             move_gripper_forward_mm=5.0,
             tilt_gripper_down_angle=15.0,
-            rotate_gripper_clockwise_angle=20.0,
-            rotate_robot_right_angle=30.0
+            rotate_gripper_counterclockwise_angle=20.0,
+            rotate_robot_left_angle=30.0
         )
     
     @patch('mcp_robot_server.get_robot')
@@ -313,8 +313,8 @@ class TestMCPServerParameterHandling(unittest.TestCase):
             move_gripper_up_mm=10.0,
             move_gripper_forward_mm=None,  # Should be filtered out
             tilt_gripper_down_angle=15.0,
-            rotate_gripper_clockwise_angle=None,  # Should be filtered out
-            rotate_robot_right_angle=None  # Should be filtered out
+            rotate_gripper_counterclockwise_angle=None,  # Should be filtered out
+            rotate_robot_left_angle=None  # Should be filtered out
         )
         
         # Verify only non-None parameters were passed

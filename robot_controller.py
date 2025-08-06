@@ -263,13 +263,13 @@ class RobotController:
         cartesian_mm = getattr(self, 'cartesian_mm', {"x": 0.0, "z": 0.0})
         
         return {
-            "robot_rotation_clockwise_deg": positions_deg.get("shoulder_pan", 0.0) - 90,
+            "robot_rotation_counterclockwise_deg": -positions_deg.get("shoulder_pan", 0.0) + 90,
             "gripper_heights_mm": cartesian_mm.get("z", 0.0),
             "gripper_linear_position_mm": cartesian_mm.get("x", 0.0),
             "gripper_tilt_deg": (positions_deg.get("wrist_flex", 0.0) + 
                                positions_deg.get("shoulder_lift", 0.0) - 
                                positions_deg.get("elbow_flex", 0.0)),
-            "gripper_rotation_deg": positions_deg.get("wrist_roll", 0.0),
+            "gripper_rotation_deg": -positions_deg.get("wrist_roll", 0.0),
             "gripper_openness_pct": positions_deg.get("gripper", 0.0),
         }
 
@@ -395,8 +395,8 @@ class RobotController:
         move_gripper_up_mm: Optional[float] = None,
         move_gripper_forward_mm: Optional[float] = None,
         tilt_gripper_down_angle: Optional[float] = None,
-        rotate_gripper_clockwise_angle: Optional[float] = None,
-        rotate_robot_right_angle: Optional[float] = None,
+        rotate_gripper_counterclockwise_angle: Optional[float] = None,
+        rotate_robot_left_angle: Optional[float] = None,
         use_interpolation: bool = True
     ) -> MoveResult:
         """Execute intuitive movement commands."""
@@ -431,10 +431,10 @@ class RobotController:
         # Handle direct joint movements
         if tilt_gripper_down_angle is not None:
             target_positions["wrist_flex"] += tilt_gripper_down_angle
-        if rotate_gripper_clockwise_angle is not None:
-            target_positions["wrist_roll"] += rotate_gripper_clockwise_angle
-        if rotate_robot_right_angle is not None:
-            target_positions["shoulder_pan"] += rotate_robot_right_angle
+        if rotate_gripper_counterclockwise_angle is not None:
+            target_positions["wrist_roll"] -= rotate_gripper_counterclockwise_angle
+        if rotate_robot_left_angle is not None:
+            target_positions["shoulder_pan"] -= rotate_robot_left_angle
         
         return self.set_joints_absolute(target_positions, use_interpolation)
 

@@ -489,13 +489,13 @@ class TestRetryLogic(unittest.IsolatedAsyncioTestCase):
                 ])
             
             self.assertIn("Rate limit exceeded", str(context.exception))
-            self.assertEqual(call_count, 4)  # Should have made 4 attempts (1 + 3 retries)
+            self.assertEqual(call_count, 6)  # Should have made 6 attempts (1 + 5 retries)
             
             # Verify sleep was called for all retries
-            self.assertEqual(mock_sleep.call_count, 3)  # 3 retries = 3 sleeps
+            self.assertEqual(mock_sleep.call_count, 5)  # 5 retries = 5 sleeps
             mock_sleep.assert_any_call(1.0)  # First retry delay
             mock_sleep.assert_any_call(2.0)  # Second retry delay
-            mock_sleep.assert_any_call(3.0)  # Third retry delay
+            mock_sleep.assert_any_call(4.0)  # Third retry delay (exponential backoff)
     
     async def test_retry_with_different_error_types(self):
         """Test retry logic with different types of retryable errors."""

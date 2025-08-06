@@ -42,16 +42,16 @@ class KeyboardController:
             keyboard.Key.down:               ("intuitive_move", {"move_gripper_up_mm": -self.spatial_step_mm}),
             
             # Robot rotation
-            keyboard.Key.left:  ("intuitive_move", {"rotate_robot_right_angle": -self.angle_step_deg}), # Counter-clockwise
-            keyboard.Key.right: ("intuitive_move", {"rotate_robot_right_angle": self.angle_step_deg}),  # Clockwise
+            keyboard.Key.left:  ("intuitive_move", {"rotate_robot_left_angle": self.angle_step_deg}), # Counter-clockwise
+            keyboard.Key.right: ("intuitive_move", {"rotate_robot_left_angle": -self.angle_step_deg}),  # Clockwise
             
             # Gripper tilt
             keyboard.KeyCode.from_char('r'): ("intuitive_move", {"tilt_gripper_down_angle": -self.angle_step_deg}), # Tilt Up
             keyboard.KeyCode.from_char('f'): ("intuitive_move", {"tilt_gripper_down_angle": self.angle_step_deg}),  # Tilt Down
             
             # Gripper rotation
-            keyboard.KeyCode.from_char('a'): ("intuitive_move", {"rotate_gripper_clockwise_angle": -self.angle_step_deg}), # Counter-clockwise
-            keyboard.KeyCode.from_char('d'): ("intuitive_move", {"rotate_gripper_clockwise_angle": self.angle_step_deg}),  # Clockwise
+            keyboard.KeyCode.from_char('a'): ("intuitive_move", {"rotate_gripper_counterclockwise_angle": self.angle_step_deg}), # Counter-clockwise
+            keyboard.KeyCode.from_char('d'): ("intuitive_move", {"rotate_gripper_counterclockwise_angle": -self.angle_step_deg}),  # Clockwise
             
             # Gripper control
             keyboard.KeyCode.from_char('q'): ("gripper_delta", self.gripper_step_pct),  # Open incrementally
